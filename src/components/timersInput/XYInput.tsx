@@ -1,6 +1,6 @@
 import { useContext, useState } from 'react';
 import { formatTime, userInputCleanup } from '../../utils/helpers';
-import { TimerDataContext } from '../../views/AddView';
+import { TimerDataContext } from '../contexts/context';
 import DeleteSetDisplay from '../generic/DeleteSetDisplay';
 import LogoBtn from '../generic/LogoBtn';
 import NumberpadInput from '../generic/NumberpadInput';

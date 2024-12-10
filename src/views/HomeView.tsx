@@ -1,14 +1,11 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import TimerContext from '../components/contexts/context';
+import { TimerContext } from '../components/contexts/context';
 import HomeBtns from '../components/generic/HomeBtns';
 import TextBtn from '../components/generic/TextBtn';
 import TimerSnapshot from '../components/generic/TimerSnapshot';
-import Countdown from '../components/timersDisplay/CountdownDisplay';
-import Stopwatch from '../components/timersDisplay/StopwatchDisplay';
-import Tabata from '../components/timersDisplay/TabataDisplay';
-import XY from '../components/timersDisplay/XYDisplay';
+import CurrentTimer from '../components/timersDisplay/CurrentTimer';
 import { getTotalTime } from '../utils/helpers';
 
 const Timers = styled.div`
@@ -50,21 +47,6 @@ const TimersView = () => {
         } else {
             setTimerComplete(false);
             setCurrentTimerID(currentTimerID + 1);
-        }
-    }
-
-    function getTimer() {
-        if (currentTimerData.type === 'Stopwatch') {
-            return <Stopwatch time={currentTimerData.time} />;
-        }
-        if (currentTimerData.type === 'Countdown') {
-            return <Countdown time={currentTimerData.time} />;
-        }
-        if (currentTimerData.type === 'XY') {
-            return <XY work={currentTimerData.work} rounds={currentTimerData.rounds} />;
-        }
-        if (currentTimerData.type === 'Tabata') {
-            return <Tabata work={currentTimerData.work} rest={currentTimerData.rest} rounds={currentTimerData.rounds} />;
         }
     }
 
@@ -125,9 +107,7 @@ const TimersView = () => {
                 ) : (
                     ''
                 )}
-                {
-                    isAtLeastOneTimer && !isWorkoutDone ? getTimer() : '' // <h2 style={{ userSelect: 'none' }}>Add a timer!</h2>
-                }
+                {isAtLeastOneTimer && !isWorkoutDone ? <CurrentTimer timerData={currentTimerData} /> : ''}
 
                 {isAtLeastOneTimer ? <HomeBtns timeChange={timeChange} handleReset={handleReset} handleFF={handleFF} isRunning={isRunning} /> : ''}
 

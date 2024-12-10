@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
-import TimerContext from '../contexts/context';
+import { TimerContext } from '../contexts/context';
 import TimerDisplay from '../generic/TimerDisplay';
 
 interface TimerProps {
