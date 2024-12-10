@@ -39,6 +39,17 @@ const TimersView = () => {
     const isAtLeastOneTimer = parsedTimerData[0].type !== '';
     const currentTimerData = parsedTimerData[currentTimerID];
 
+    const url = new URL(window.location.href);
+    const params = new URLSearchParams(url.search);
+    const encodedParam = params.get('timerData');
+
+    console.log(url);
+
+    if (encodedParam) {
+        const decodedString = decodeURIComponent(encodedParam);
+        console.log(decodedString); // Output: Hello, World! @#&=
+    }
+
     if (timerComplete) {
         if (currentTimerID + 1 === parsedTimerData.length) {
             setIsWorkoutDone(true);

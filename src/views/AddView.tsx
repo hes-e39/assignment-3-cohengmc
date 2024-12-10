@@ -104,7 +104,8 @@ const AddView = () => {
             }
         }
         if (timersSet === timerData.length) {
-            navigate('/');
+            const encodedString = encodeURIComponent(JSON.stringify(timerData));
+            navigate(`/?timerData=${encodedString}`);
         } else {
             alert('Make sure all timers are set');
         }
