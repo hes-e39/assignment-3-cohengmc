@@ -9,30 +9,45 @@ interface TimerProps {
 const Countdown = ({ time }: TimerProps) => {
     const globalTimerData = useContext(TimerContext);
     const [seconds, setSeconds] = useState(time);
+    const [cacheChecked, setCacheChecked] = useState(false);
 
     useEffect(() => {
         if (globalTimerData.hardReset) {
             setSeconds(time);
         }
+        if (globalTimerData.timerComplete) {
+            setSeconds(time);
+        }
+        if (globalTimerData.newTimer) {
+            setSeconds(time);
+            globalTimerData.setNewTimer(false);
+        }
+        if (localStorage.getItem('seconds') !== '-1' && !globalTimerData.hardReset) {
+            setSeconds(Number(localStorage.getItem('seconds')));
+        }
+        setCacheChecked(true);
     }, [globalTimerData, time]);
 
     useEffect(() => {
-        let interval = null;
-
-        if (globalTimerData.isRunning && !globalTimerData.timerComplete) {
-            if (seconds === 0) {
-                globalTimerData.setTimerComplete(true);
+        if (cacheChecked) {
+            let interval = null;
+            localStorage.setItem('seconds', seconds.toString());
+            if (globalTimerData.isRunning && !globalTimerData.timerComplete) {
+                if (seconds === 0) {
+                    globalTimerData.setTimerComplete(true);
+                    setSeconds(-1);
+                }
+                interval = setTimeout(() => {
+                    setSeconds(prevseconds => prevseconds - 1);
+                }, 1000);
+            } else if (!globalTimerData.isRunning && seconds !== 0 && interval != null) {
+                clearTimeout(interval);
             }
-            interval = setTimeout(() => {
-                setSeconds(prevseconds => prevseconds - 1);
-            }, 1000);
-        } else if (!globalTimerData.isRunning && seconds !== 0 && interval != null) {
-            clearTimeout(interval);
+            if (interval != null) {
+                return () => clearTimeout(interval);
+            }
         }
-        if (interval != null) {
-            return () => clearTimeout(interval);
-        }
-    }, [globalTimerData, seconds]);
+    }, [globalTimerData, seconds, cacheChecked]);
 
     return (
         <div className="clockContainer">

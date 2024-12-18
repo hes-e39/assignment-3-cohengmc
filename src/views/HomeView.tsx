@@ -1,12 +1,12 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { TimerContext } from '../components/contexts/context';
+import Duration from '../components/generic/Duration';
 import HomeBtns from '../components/generic/HomeBtns';
+import Summary from '../components/generic/Summary';
 import TextBtn from '../components/generic/TextBtn';
-import TimerSnapshot from '../components/generic/TimerSnapshot';
 import CurrentTimer from '../components/timersDisplay/CurrentTimer';
-import { getTotalTime } from '../utils/helpers';
 
 const Timers = styled.div`
   display: flex;
@@ -15,39 +15,62 @@ const Timers = styled.div`
   gap: 1em
 `;
 
-interface TimerData {
-    type: string;
-    time: number;
-    rounds: number;
-    work: number;
-    rest: number;
-}
-
 const TimersView = () => {
     const navigate = useNavigate();
     const [isRunning, setIsRunning] = useState(false);
     const [timerComplete, setTimerComplete] = useState(false);
+    const [newTimer, setNewTimer] = useState(true);
     const [currentTimerID, setCurrentTimerID] = useState(0);
     const [isWorkoutDone, setIsWorkoutDone] = useState(false);
     const [hardReset, setHardReset] = useState(false);
+    const [searchParams] = useSearchParams();
+    const [cacheChecked, setCacheChecked] = useState(false);
+    const [workoutHistory, setWorkoutHistory] = useState(['']);
+
+    useEffect(() => {
+        if (localStorage.getItem('isWorkoutDone') === 'true') {
+            setIsWorkoutDone(true);
+        }
+        if (localStorage.getItem('isRunning') === 'true') {
+            setIsRunning(true);
+        }
+        setWorkoutHistory(JSON.parse(localStorage.getItem('workoutHistory')));
+        setCurrentTimerID(Number(localStorage.getItem('currentTimerID')));
+        setCacheChecked(true);
+    }, []);
+
+    useEffect(() => {
+        if (cacheChecked) {
+            localStorage.setItem('isWorkoutDone', isWorkoutDone.toString());
+            localStorage.setItem('isRunning', isRunning.toString());
+            localStorage.setItem('currentTimerID', currentTimerID.toString());
+            localStorage.setItem('workoutHistory', JSON.stringify(workoutHistory));
+        }
+    }, [isWorkoutDone, isRunning, currentTimerID, cacheChecked, workoutHistory]);
 
     const cacheTimerData = localStorage.getItem('timerData');
     if (cacheTimerData === null) {
         localStorage.setItem('timerData', JSON.stringify([{ type: '', time: 0, rounds: 0, work: 0, rest: 0 }]));
     }
-    const parsedTimerData = cacheTimerData !== null && JSON.parse(cacheTimerData);
+    const timerData = searchParams.get('timerData');
+    let parsedTimerData = [];
+    if (timerData === null) {
+        parsedTimerData = [{ type: '', time: 0, rounds: 0, work: 0, rest: 0 }];
+    } else {
+        parsedTimerData = timerData !== null && JSON.parse(decodeURIComponent(timerData));
+    }
     const isAtLeastOneTimer = parsedTimerData[0].type !== '';
     const currentTimerData = parsedTimerData[currentTimerID];
 
-    const url = new URL(window.location.href);
-    const params = new URLSearchParams(url.search);
-    const encodedParam = params.get('timerData');
+    if (isWorkoutDone) {
+        //Check if last item in workout history is parsedTimerdata
+        //if no, add parsedTimerData to workoutHistory
 
-    console.log(url);
-
-    if (encodedParam) {
-        const decodedString = decodeURIComponent(encodedParam);
-        console.log(decodedString); // Output: Hello, World! @#&=
+        if (workoutHistory === null || workoutHistory[0] === '') {
+            setWorkoutHistory([parsedTimerData]);
+        } else if (JSON.stringify(workoutHistory[workoutHistory.length - 1]) !== JSON.stringify(parsedTimerData)) {
+            setWorkoutHistory([...workoutHistory, parsedTimerData]);
+        }
     }
 
     if (timerComplete) {
@@ -55,13 +78,18 @@ const TimersView = () => {
             setIsWorkoutDone(true);
             setIsRunning(false);
             setTimerComplete(false);
+            localStorage.setItem('seconds', '-1');
+            localStorage.setItem('roundsRemaining', '-1');
+            localStorage.setItem('isWorking', '-1');
         } else {
             setTimerComplete(false);
             setCurrentTimerID(currentTimerID + 1);
+            setNewTimer(true);
+            localStorage.setItem('seconds', '-1');
+            localStorage.setItem('roundsRemaining', '-1');
+            localStorage.setItem('isWorking', '-1');
         }
     }
-
-    // const handleInputBtnClick = () => {};
 
     const timeChange = () => {
         //pause and play
@@ -72,6 +100,9 @@ const TimersView = () => {
     };
     const handleReset = () => {
         // reset back to the begining, should double check with user
+        localStorage.setItem('seconds', '-1');
+        localStorage.setItem('roundsRemaining', '-1');
+        localStorage.setItem('isWorking', '-1');
         if (currentTimerID === 0) {
             setHardReset(true);
         }
@@ -79,38 +110,45 @@ const TimersView = () => {
         setCurrentTimerID(0);
         setIsWorkoutDone(false);
         setIsRunning(false);
+        setNewTimer(true);
     };
-
     const handleFF = () => {
         if (currentTimerID + 1 === parsedTimerData.length && isAtLeastOneTimer) {
             setIsWorkoutDone(true);
             setTimerComplete(false);
             setIsRunning(false);
+            localStorage.setItem('seconds', '-1');
+            localStorage.setItem('roundsRemaining', '-1');
+            localStorage.setItem('isWorking', '-1');
         } else {
             setTimerComplete(false);
             setCurrentTimerID(currentTimerID + 1);
+            setNewTimer(true);
         }
     };
     const handleGoToEdit = () => {
-        navigate('/add');
+        const searchParams = new URLSearchParams();
+        searchParams.set('timerData', encodeURIComponent(JSON.stringify(parsedTimerData)));
+        navigate(`/add?${searchParams.toString()}`);
+    };
+
+    const handleGoToHistory = () => {
+        const searchParams = new URLSearchParams();
+        searchParams.set('timerData', encodeURIComponent(JSON.stringify(parsedTimerData)));
+        navigate(`/history?${searchParams.toString()}`);
     };
 
     return (
-        <TimerContext.Provider value={{ isRunning, timerComplete, setTimerComplete, hardReset }}>
+        <TimerContext.Provider value={{ isRunning, timerComplete, setTimerComplete, hardReset, newTimer, setNewTimer }}>
             <Timers>
-                <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', justifyContent: 'center' }}>
-                    {parsedTimerData.map((timer: TimerData, index: number) =>
-                        isAtLeastOneTimer ? <TimerSnapshot key={`timerSnapshot${index}`} timer={timer} index={index} isWorkoutDone={isWorkoutDone} currentTimerID={currentTimerID} /> : '',
-                    )}
-                    <p
-                        style={{
-                            alignSelf: 'center',
-                            userSelect: 'none',
-                        }}
-                    >
-                        Total Workout Time: {getTotalTime()}
-                    </p>
-                </div>
+                {isAtLeastOneTimer ? (
+                    <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', justifyContent: 'center' }}>
+                        <Summary isWorkoutDone={isWorkoutDone} currentTimerID={currentTimerID} isAtLeastOneTimer={isAtLeastOneTimer} parsedTimerData={parsedTimerData} />
+                        <Duration parsedTimerData={parsedTimerData} />
+                    </div>
+                ) : (
+                    ''
+                )}
                 {isWorkoutDone ? (
                     <div className="clockContainer">
                         <h1 className="clockStyle">DO:NE</h1>
@@ -119,10 +157,10 @@ const TimersView = () => {
                     ''
                 )}
                 {isAtLeastOneTimer && !isWorkoutDone ? <CurrentTimer timerData={currentTimerData} /> : ''}
-
-                {isAtLeastOneTimer ? <HomeBtns timeChange={timeChange} handleReset={handleReset} handleFF={handleFF} isRunning={isRunning} /> : ''}
+                {isAtLeastOneTimer ? <HomeBtns timeChange={timeChange} handleReset={handleReset} handleFF={handleFF} isRunning={isRunning} isWorkoutDone={isWorkoutDone} /> : ''}
 
                 <TextBtn onClick={handleGoToEdit} key={`editButton`} name={'Edit Workout'} />
+                <TextBtn onClick={handleGoToHistory} key={`historyButton`} name={'Workout History'} />
             </Timers>
         </TimerContext.Provider>
     );

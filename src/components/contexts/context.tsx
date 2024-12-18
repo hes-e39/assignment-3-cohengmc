@@ -7,6 +7,10 @@ export const TimerContext = createContext({
         timerComplete;
     },
     hardReset: false,
+    newTimer: true,
+    setNewTimer: (timerComplete: boolean) => {
+        timerComplete;
+    },
 });
 
 interface TimerData {

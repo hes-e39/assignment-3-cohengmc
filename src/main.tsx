@@ -5,6 +5,7 @@ import { RouterProvider, createHashRouter } from 'react-router-dom';
 import './index.css';
 import DocumentationView from './components/deprecatedViews/DocumentationView';
 import AddView from './views/AddView';
+import HistoryView from './views/HistoryView';
 import HomeView from './views/HomeView';
 
 // const PageIndex = () => {
@@ -40,6 +41,10 @@ const router = createHashRouter([
             {
                 path: '/add',
                 element: <AddView />,
+            },
+            {
+                path: '/history',
+                element: <HistoryView />,
             },
         ],
     },

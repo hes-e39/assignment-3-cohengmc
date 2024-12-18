@@ -8,7 +8,7 @@ const NumberpadInput = ({ handleInputBtnClick }: BtnProps) => {
     const numberBtns = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 
     return (
-        <div className="btnContainer">
+        <div className="btnContainer" style={{ display: 'flex', flexDirection: 'column' }}>
             <div className="btnContainer">
                 {numberBtns.map(btn => (
                     <TextBtn onClick={handleInputBtnClick} key={`numBtn${btn}`} name={btn.toString()} />

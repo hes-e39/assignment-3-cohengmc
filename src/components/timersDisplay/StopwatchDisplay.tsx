@@ -9,32 +9,40 @@ interface TimerProps {
 const Stopwatch = ({ time }: TimerProps) => {
     const globalTimerData = useContext(TimerContext);
     const [seconds, setSeconds] = useState(0);
+    const [cacheChecked, setCacheChecked] = useState(false);
 
     useEffect(() => {
         if (globalTimerData.hardReset) {
             setSeconds(0);
         }
+        if (localStorage.getItem('seconds') !== '-1' && !globalTimerData.hardReset) {
+            setSeconds(Number(localStorage.getItem('seconds')));
+        }
+        setCacheChecked(true);
     }, [globalTimerData]);
 
     useEffect(() => {
-        let interval = null;
+        if (cacheChecked) {
+            let interval = null;
+            localStorage.setItem('seconds', seconds.toString());
 
-        if (globalTimerData.isRunning && !globalTimerData.timerComplete) {
-            if (seconds === time) {
-                globalTimerData.setTimerComplete(true);
-                setSeconds(0);
-            } else if (seconds < time) {
-                interval = setTimeout(() => {
-                    setSeconds(prevseconds => prevseconds + 1);
-                }, 1000);
+            if (globalTimerData.isRunning && !globalTimerData.timerComplete) {
+                if (seconds === time) {
+                    globalTimerData.setTimerComplete(true);
+                    setSeconds(-1);
+                } else if (seconds < time) {
+                    interval = setTimeout(() => {
+                        setSeconds(prevseconds => prevseconds + 1);
+                    }, 1000);
+                }
+            } else if (!globalTimerData.isRunning && seconds !== 0 && interval != null) {
+                clearTimeout(interval);
             }
-        } else if (!globalTimerData.isRunning && seconds !== 0 && interval != null) {
-            clearTimeout(interval);
+            if (interval != null) {
+                return () => clearTimeout(interval);
+            }
         }
-        if (interval != null) {
-            return () => clearTimeout(interval);
-        }
-    }, [globalTimerData, seconds, time]);
+    }, [globalTimerData, seconds, time, cacheChecked]);
 
     return (
         <div className="clockContainer">

@@ -36,9 +36,75 @@ function userInputCleanup(userInput: string) {
     return totalTime;
 }
 
-function getTotalTime() {
-    const cacheTimerData = localStorage.getItem('timerData');
-    const parsedTimerData = cacheTimerData !== null && JSON.parse(cacheTimerData);
+const getTimeRemaining = (
+    parsedTimerData: [
+        {
+            type: string;
+            time: number;
+            rounds: number;
+            work: number;
+            rest: number;
+        },
+    ],
+) => {
+    const isAtLeastOneTimer = parsedTimerData[0].type !== '';
+
+    if (isAtLeastOneTimer) {
+        let totalTime = 0;
+
+        for (let i = 0; i < parsedTimerData.length; i++) {
+            const timer = parsedTimerData[parsedTimerData.length - 1 - i];
+
+            if (parsedTimerData.length - 1 === Number(localStorage.getItem('seconds'))) {
+                if (timer.type === 'Stopwatch') {
+                    totalTime = totalTime + timer.time;
+                }
+
+                if (timer.type === 'Countdown') {
+                    totalTime = totalTime + Number(localStorage.getItem('seconds'));
+                }
+                if (timer.type === 'XY') {
+                    totalTime = totalTime + timer.work * timer.rounds;
+                }
+
+                if (timer.type === 'Tabata') {
+                    totalTime = totalTime + (timer.work + timer.rest) * timer.rounds;
+                }
+            } else {
+                if (timer.type === 'Stopwatch') {
+                    totalTime = totalTime + timer.time;
+                }
+
+                if (timer.type === 'Countdown') {
+                    totalTime = totalTime + Number(localStorage.getItem('seconds'));
+                }
+
+                if (timer.type === 'XY') {
+                    totalTime = totalTime + timer.work * timer.rounds;
+                }
+
+                if (timer.type === 'Tabata') {
+                    totalTime = totalTime + (timer.work + timer.rest) * timer.rounds;
+                }
+            }
+        }
+
+        return formatTime(totalTime);
+    }
+    return formatTime(0);
+};
+
+function getTotalTime(
+    parsedTimerData: [
+        {
+            type: string;
+            time: number;
+            rounds: number;
+            work: number;
+            rest: number;
+        },
+    ],
+) {
     const isAtLeastOneTimer = parsedTimerData[0].type !== '';
 
     if (isAtLeastOneTimer) {
@@ -65,4 +131,4 @@ function getTotalTime() {
     return formatTime(0);
 }
 
-export { formatTime, userInputCleanup, getTotalTime };
+export { formatTime, userInputCleanup, getTotalTime, getTimeRemaining };

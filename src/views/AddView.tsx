@@ -1,10 +1,11 @@
 import styled from 'styled-components';
 
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import TextBtn from '../components/generic/TextBtn';
 
 import { TimerDataContext } from '../components/contexts/context';
+import LogoBtn from '../components/generic/LogoBtn';
 import Countdown from '../components/timersInput/CountdownInput';
 import Stopwatch from '../components/timersInput/StopwatchInput';
 import Tabata from '../components/timersInput/TabataInput';
@@ -33,17 +34,22 @@ const TimerTitle = styled.div``;
 const blankTimer = [{ type: '', time: 0, rounds: 0, work: 0, rest: 0 }];
 
 const AddView = () => {
-    const [timerData, setTimerData] = useState([{ type: 'reload', time: 0, rounds: 0, work: 0, rest: 0 }]);
+    const [timerData, setTimerData] = useState(blankTimer);
+    const [searchParams] = useSearchParams();
     const navigate = useNavigate();
 
     useEffect(() => {
-        const cacheTimerData = localStorage.getItem('timerData');
-        let parsedTimerData = cacheTimerData !== null && JSON.parse(cacheTimerData);
-        if (!parsedTimerData) parsedTimerData = blankTimer;
+        const timerURLData = searchParams.get('timerData');
+        let parsedTimerData = [];
+        if (timerURLData === null) {
+            parsedTimerData = blankTimer;
+        } else {
+            parsedTimerData = JSON.parse(decodeURIComponent(timerURLData));
+        }
         setTimerData(parsedTimerData);
-    }, []);
+    }, [searchParams]);
 
-    if (timerData.length === 0) {
+    if (timerData === null || timerData.length === 0) {
         setTimerData(blankTimer);
     } else if (timerData[0].type !== 'reload') {
         localStorage.setItem('timerData', JSON.stringify(timerData));
@@ -80,6 +86,33 @@ const AddView = () => {
         }
     }
 
+    function mover(index: number) {
+        return (
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1rem', margin: '.5rem' }}>
+                {index !== 0 ? <LogoBtn onClick={() => handleMoveUp(index)} name="up" /> : ''}
+                <div>Move Timer</div>
+                {index !== timerData.length - 1 ? <LogoBtn onClick={() => handleMoveDown(index)} name="down" /> : ''}
+            </div>
+        );
+    }
+
+    function handleMoveDown(index: number) {
+        // biome-ignore lint/style/useConst: <Data get manipulated later>
+        let tempData = timerData;
+        const tempTimer = timerData[index];
+        tempData[index] = tempData[index + 1];
+        tempData[index + 1] = tempTimer;
+        setTimerData([...tempData]);
+    }
+    function handleMoveUp(index: number) {
+        // biome-ignore lint/style/useConst: <Data get manipulated later>
+        let tempData = timerData;
+        const tempTimer = timerData[index];
+        tempData[index] = tempData[index - 1];
+        tempData[index - 1] = tempTimer;
+        setTimerData([...tempData]);
+    }
+
     const handleDone = () => {
         let timersSet = 0;
         for (const timer of timerData) {
@@ -104,8 +137,15 @@ const AddView = () => {
             }
         }
         if (timersSet === timerData.length) {
-            const encodedString = encodeURIComponent(JSON.stringify(timerData));
-            navigate(`/?timerData=${encodedString}`);
+            localStorage.setItem('currentTimerID', '0');
+            localStorage.setItem('seconds', '-1');
+            localStorage.setItem('roundsRemaining', '-1');
+            localStorage.setItem('isWorking', '-1');
+            localStorage.setItem('isWorkoutDone', 'false');
+            localStorage.setItem('isRunning', 'false');
+            const searchParams = new URLSearchParams();
+            searchParams.set('timerData', encodeURIComponent(JSON.stringify(timerData)));
+            navigate(`/?${searchParams.toString()}`);
         } else {
             alert('Make sure all timers are set');
         }
@@ -116,8 +156,9 @@ const AddView = () => {
             <Timers>
                 {timerData.map((timer, index) =>
                     timerData[0].type !== '' ? (
-                        <div key={`timerBlock${index}`}>
+                        <div key={`timerBlock${index}`} style={{ textAlign: 'center' }}>
                             <TimerTitle>{`#${index + 1}: ${timer.type}`}</TimerTitle>
+                            {timerData.length > 1 ? mover(index) : ''}
                             {getTimer(timer.type, index)}
                         </div>
                     ) : (

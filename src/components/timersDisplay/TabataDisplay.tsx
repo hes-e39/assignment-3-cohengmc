@@ -13,6 +13,7 @@ const Tabata = ({ work, rest, rounds }: TimerProps) => {
     const [seconds, setSeconds] = useState(work);
     const [roundsRemaining, setRoundsRemaining] = useState(rounds);
     const [isWorking, setIsWorking] = useState(true);
+    const [cacheChecked, setCacheChecked] = useState(false);
 
     useEffect(() => {
         if (globalTimerData.hardReset) {
@@ -20,39 +21,63 @@ const Tabata = ({ work, rest, rounds }: TimerProps) => {
             setRoundsRemaining(rounds);
             setIsWorking(true);
         }
+        if (globalTimerData.newTimer) {
+            setSeconds(work);
+            setRoundsRemaining(rounds);
+            setIsWorking(true);
+            globalTimerData.setNewTimer(false);
+        }
+        if (localStorage.getItem('seconds') !== '-1' && !globalTimerData.hardReset) {
+            setSeconds(Number(localStorage.getItem('seconds')));
+        }
+        if (localStorage.getItem('roundsRemaining') !== '-1' && !globalTimerData.hardReset) {
+            setRoundsRemaining(Number(localStorage.getItem('roundsRemaining')));
+        }
+        if (localStorage.getItem('isWorking') !== '-1' && !globalTimerData.hardReset) {
+            if (localStorage.getItem('isWorking') === 'false') setIsWorking(false);
+            else setIsWorking(true);
+        }
+        setCacheChecked(true);
     }, [globalTimerData, work, rounds]);
 
     useEffect(() => {
-        let interval = null;
+        if (cacheChecked) {
+            let interval = null;
+            localStorage.setItem('seconds', seconds.toString());
+            localStorage.setItem('roundsRemaining', roundsRemaining.toString());
+            localStorage.setItem('isWorking', isWorking.toString());
 
-        if (globalTimerData.isRunning && !globalTimerData.timerComplete) {
-            if (roundsRemaining === rounds) {
-                setRoundsRemaining(roundsRemaining - 1);
-            }
-            if (seconds === 0) {
-                if (roundsRemaining === 0) {
+            if (globalTimerData.isRunning && !globalTimerData.timerComplete) {
+                if (roundsRemaining === rounds) {
+                    setRoundsRemaining(roundsRemaining - 1);
+                }
+                if (roundsRemaining === -1) {
                     globalTimerData.setTimerComplete(true);
+                    setSeconds(-1);
+                    setRoundsRemaining(-2);
                 } else {
-                    if (isWorking) {
-                        setSeconds(rest);
-                        setIsWorking(false);
-                    } else {
-                        setRoundsRemaining(roundsRemaining - 1);
-                        setSeconds(work);
-                        setIsWorking(true);
+                    if (seconds === 0) {
+                        if (isWorking) {
+                            setSeconds(rest);
+                            setIsWorking(false);
+                        } else {
+                            setRoundsRemaining(roundsRemaining - 1);
+                            setSeconds(work);
+                            setIsWorking(true);
+                        }
                     }
                 }
+                interval = setTimeout(() => {
+                    setSeconds(prevseconds => prevseconds - 1);
+                }, 1000);
+            } else if (!globalTimerData.isRunning && seconds !== 0 && interval != null) {
+                clearTimeout(interval);
             }
-            interval = setTimeout(() => {
-                setSeconds(prevseconds => prevseconds - 1);
-            }, 1000);
-        } else if (!globalTimerData.isRunning && seconds !== 0 && interval != null) {
-            clearTimeout(interval);
+            if (interval != null) {
+                return () => clearTimeout(interval);
+            }
         }
-        if (interval != null) {
-            return () => clearTimeout(interval);
-        }
-    }, [globalTimerData, isWorking, seconds, roundsRemaining, rounds, work, rest]);
+    }, [globalTimerData, isWorking, seconds, roundsRemaining, rounds, work, rest, cacheChecked]);
 
     return (
         <div className="clockContainer">
