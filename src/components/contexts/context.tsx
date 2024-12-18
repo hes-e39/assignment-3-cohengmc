@@ -22,10 +22,11 @@ interface TimerData {
     rounds: number;
     work: number;
     rest: number;
+    description: string;
 }
 
 export const TimerDataContext = createContext({
-    timerData: [{ type: '', time: 0, rounds: 0, work: 0, rest: 0 }],
+    timerData: [{ type: '', time: 0, rounds: 0, work: 0, rest: 0, description: '' }],
     setTimerData: (timerData: TimerData[]) => {
         timerData;
     },

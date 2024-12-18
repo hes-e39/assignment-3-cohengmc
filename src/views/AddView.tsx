@@ -6,6 +6,7 @@ import TextBtn from '../components/generic/TextBtn';
 
 import { TimerDataContext } from '../components/contexts/context';
 import LogoBtn from '../components/generic/LogoBtn';
+import TimerDescription from '../components/generic/TimerDescription';
 import Countdown from '../components/timersInput/CountdownInput';
 import Stopwatch from '../components/timersInput/StopwatchInput';
 import Tabata from '../components/timersInput/TabataInput';
@@ -31,7 +32,7 @@ const AddTimerContainer = styled.div`
 
 const TimerTitle = styled.div``;
 
-const blankTimer = [{ type: '', time: 0, rounds: 0, work: 0, rest: 0 }];
+const blankTimer = [{ type: '', time: 0, rounds: 0, work: 0, rest: 0, description: '' }];
 
 const AddView = () => {
     const [timerData, setTimerData] = useState(blankTimer);
@@ -57,7 +58,7 @@ const AddView = () => {
 
     const handleAddTimer = (event: React.MouseEvent<HTMLButtonElement>) => {
         const target = event.target as HTMLElement;
-        const newTimer = { type: target.innerText, time: 0, rounds: 0, work: 0, rest: 0 };
+        const newTimer = { type: target.innerText, time: 0, rounds: 0, work: 0, rest: 0, description: '' };
         if (timerData.length === 0) {
             // Checking if length is 0 such that no error is thrown when checking timerData[0].type. If the length is 0, this will throw an error because there will be no timer listed yet in the timer data array
             setTimerData([newTimer]);
@@ -159,6 +160,7 @@ const AddView = () => {
                         <div key={`timerBlock${index}`} style={{ textAlign: 'center' }}>
                             <TimerTitle>{`#${index + 1}: ${timer.type}`}</TimerTitle>
                             {timerData.length > 1 ? mover(index) : ''}
+                            <TimerDescription currentTimer={index} />
                             {getTimer(timer.type, index)}
                         </div>
                     ) : (

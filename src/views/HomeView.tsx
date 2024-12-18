@@ -51,12 +51,12 @@ const TimersView = () => {
 
     const cacheTimerData = localStorage.getItem('timerData');
     if (cacheTimerData === null) {
-        localStorage.setItem('timerData', JSON.stringify([{ type: '', time: 0, rounds: 0, work: 0, rest: 0 }]));
+        localStorage.setItem('timerData', JSON.stringify([{ type: '', time: 0, rounds: 0, work: 0, rest: 0, description: '' }]));
     }
     const timerData = searchParams.get('timerData');
     let parsedTimerData = [];
     if (timerData === null) {
-        parsedTimerData = [{ type: '', time: 0, rounds: 0, work: 0, rest: 0 }];
+        parsedTimerData = [{ type: '', time: 0, rounds: 0, work: 0, rest: 0, description: '' }];
     } else {
         parsedTimerData = timerData !== null && JSON.parse(decodeURIComponent(timerData));
     }

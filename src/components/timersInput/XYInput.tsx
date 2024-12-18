@@ -31,6 +31,7 @@ const XY = ({ timerID }: TimerProps) => {
                     rounds: Number(userData.roundAmountInput),
                     work: userInputCleanup(userData.roundWorkDurationInput),
                     rest: 0,
+                    description: '',
                 };
                 // biome-ignore lint/style/useConst: <it does change>
                 let newTimerData = [...timerData.timerData];
@@ -49,7 +50,7 @@ const XY = ({ timerID }: TimerProps) => {
     };
     const handleBackBtn = () => {
         setUserData({ ...userData, roundAmountInput: '00', roundWorkDurationInput: '0000', userSelect: '' });
-        const currentTimerData = { type: 'XY', time: 0, rounds: 0, work: 0, rest: 0 };
+        const currentTimerData = { type: 'XY', time: 0, rounds: 0, work: 0, rest: 0, description: '' };
         // biome-ignore lint/style/useConst: <it does change>
         let newTimerData = [...timerData.timerData];
         newTimerData[timerID] = currentTimerData;

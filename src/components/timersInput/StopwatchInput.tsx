@@ -22,7 +22,7 @@ const Stopwatch = ({ timerID }: TimerProps) => {
         const target = event.target as HTMLElement;
         if (target.innerText === 'Set') {
             if (userInputCleanup(timerInput) > 0) {
-                const currentTimerData = { type: 'Stopwatch', time: userInputCleanup(timerInput), rounds: 0, work: 0, rest: 0 };
+                const currentTimerData = { type: 'Stopwatch', time: userInputCleanup(timerInput), rounds: 0, work: 0, rest: 0, description: '' };
                 // biome-ignore lint/style/useConst: <it does change>
                 let newTimerData = [...timerData.timerData];
                 newTimerData[timerID] = currentTimerData;
@@ -36,7 +36,7 @@ const Stopwatch = ({ timerID }: TimerProps) => {
     };
     const handleBackBtn = () => {
         setTimerInput('000000');
-        const currentTimerData = { type: 'Stopwatch', time: 0, rounds: 0, work: 0, rest: 0 };
+        const currentTimerData = { type: 'Stopwatch', time: 0, rounds: 0, work: 0, rest: 0, description: '' };
         // biome-ignore lint/style/useConst: <it does change>
         let newTimerData = [...timerData.timerData];
         newTimerData[timerID] = currentTimerData;

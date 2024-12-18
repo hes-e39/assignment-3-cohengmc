@@ -4,7 +4,6 @@ import { ErrorBoundary } from 'react-error-boundary';
 import { RouterProvider, createHashRouter } from 'react-router-dom';
 
 import './index.css';
-import DocumentationView from './components/deprecatedViews/DocumentationView';
 import AddView from './views/AddView';
 import HistoryView from './views/HistoryView';
 import HomeView from './views/HomeView';
@@ -27,10 +26,6 @@ const router = createHashRouter([
             {
                 index: true,
                 element: <HomeView />,
-            },
-            {
-                path: '/docs',
-                element: <DocumentationView />,
             },
             {
                 path: '/add',
