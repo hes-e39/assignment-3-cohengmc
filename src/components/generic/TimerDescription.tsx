@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { TimerDataContext } from '../contexts/context';
 
 interface Props {
@@ -8,7 +8,12 @@ interface Props {
 const TimerDescription = ({ currentTimer }: Props) => {
     const timerData = useContext(TimerDataContext);
     const [text, setText] = useState(''); // State to hold the text
-    const [savedText, setSavedText] = useState(timerData.timerData[currentTimer].description); // State to hold saved text
+    const [savedText, setSavedText] = useState(''); // State to hold saved text
+
+    useEffect(() => {
+        setSavedText(timerData.timerData[currentTimer].description);
+        setText('');
+    }, [timerData, currentTimer]);
 
     const handleTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.value.length <= 50) {
