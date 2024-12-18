@@ -17,6 +17,7 @@ interface TimerData {
     rounds: number;
     work: number;
     rest: number;
+    description: string;
 }
 
 const HistoryView = () => {
@@ -35,8 +36,8 @@ const HistoryView = () => {
         searchParams.set('timerData', timerData !== null ? timerData : '');
         navigate(`/?${searchParams.toString()}`);
     };
-
-    const workoutHistory = JSON.parse(localStorage.getItem('workoutHistory'));
+    const wH = localStorage.getItem('workoutHistory');
+    const workoutHistory = wH === null ? null : JSON.parse(wH);
 
     return (
         <div>

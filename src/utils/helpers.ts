@@ -101,17 +101,16 @@ const getTimeRemaining = (
     return formatTime(0);
 };
 
-function getTotalTime(
-    parsedTimerData: [
-        {
-            type: string;
-            time: number;
-            rounds: number;
-            work: number;
-            rest: number;
-        },
-    ],
-) {
+interface TimerData {
+    type: string;
+    time: number;
+    rounds: number;
+    work: number;
+    rest: number;
+    description: string;
+}
+
+function getTotalTime(parsedTimerData: TimerData[]) {
     const isAtLeastOneTimer = parsedTimerData[0].type !== '';
 
     if (isAtLeastOneTimer) {

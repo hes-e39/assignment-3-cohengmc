@@ -8,7 +8,12 @@ import AddView from './views/AddView';
 import HistoryView from './views/HistoryView';
 import HomeView from './views/HomeView';
 
-function ErrorFallback({ error, resetErrorBoundary }) {
+interface ErrorFallbackProps {
+    error: Error;
+    resetErrorBoundary: () => void;
+}
+
+const ErrorFallback: React.FC<ErrorFallbackProps> = ({ error, resetErrorBoundary }) => {
     return (
         <div role="alert">
             <p>Something went wrong:</p>
@@ -16,7 +21,7 @@ function ErrorFallback({ error, resetErrorBoundary }) {
             <button onClick={resetErrorBoundary}>Try again</button>
         </div>
     );
-}
+};
 
 const router = createHashRouter([
     {

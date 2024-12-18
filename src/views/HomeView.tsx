@@ -35,7 +35,8 @@ const TimersView = () => {
         if (localStorage.getItem('isRunning') === 'true') {
             setIsRunning(true);
         }
-        setWorkoutHistory(JSON.parse(localStorage.getItem('workoutHistory')));
+        const wH = localStorage.getItem('workoutHistory');
+        setWorkoutHistory(wH !== null && JSON.parse(wH));
         setCurrentTimerID(Number(localStorage.getItem('currentTimerID')));
         setCacheChecked(true);
     }, []);

@@ -1,15 +1,16 @@
 import TimerSnapshot from './TimerSnapshot';
 
+interface TimerData {
+    type: string;
+    time: number;
+    rounds: number;
+    work: number;
+    rest: number;
+    description: string;
+}
+
 interface Props {
-    parsedTimerData: [
-        {
-            type: string;
-            time: number;
-            rounds: number;
-            work: number;
-            rest: number;
-        },
-    ];
+    parsedTimerData: TimerData[];
     isAtLeastOneTimer: boolean;
     isWorkoutDone: boolean;
     currentTimerID: number;
@@ -21,6 +22,7 @@ interface TimerData {
     rounds: number;
     work: number;
     rest: number;
+    description: string;
 }
 
 const Summary = ({ parsedTimerData, isAtLeastOneTimer, isWorkoutDone, currentTimerID }: Props) => {
