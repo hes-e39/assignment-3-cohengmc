@@ -19,6 +19,10 @@ const XY = ({ work, rounds }: TimerProps) => {
             setSeconds(work);
             setRoundsRemaining(rounds - 1);
         }
+        if (globalTimerData.timerComplete) {
+            setSeconds(work);
+            setRoundsRemaining(rounds - 1);
+        }
         if (globalTimerData.newTimer) {
             setSeconds(work);
             setRoundsRemaining(rounds - 1);

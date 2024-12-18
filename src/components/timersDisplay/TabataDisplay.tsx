@@ -21,6 +21,11 @@ const Tabata = ({ work, rest, rounds }: TimerProps) => {
             setRoundsRemaining(rounds - 1);
             setIsWorking(true);
         }
+        if (globalTimerData.timerComplete) {
+            setSeconds(work);
+            setRoundsRemaining(rounds - 1);
+            setIsWorking(true);
+        }
         if (globalTimerData.newTimer) {
             setSeconds(work);
             setRoundsRemaining(rounds - 1);
