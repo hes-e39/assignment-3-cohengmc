@@ -14,16 +14,17 @@ const XY = ({ work, rounds }: TimerProps) => {
     const [cacheChecked, setCacheChecked] = useState(false);
 
     useEffect(() => {
+        setCacheChecked(false);
         if (globalTimerData.hardReset) {
             setSeconds(work);
-            setRoundsRemaining(rounds);
+            setRoundsRemaining(rounds - 1);
         }
         if (globalTimerData.newTimer) {
             setSeconds(work);
-            setRoundsRemaining(rounds);
+            setRoundsRemaining(rounds - 1);
             globalTimerData.setNewTimer(false);
         }
-        if (localStorage.getItem('seconds') !== '-1' && !globalTimerData.hardReset) {
+        if (localStorage.getItem('seconds') !== '-1' && localStorage.getItem('seconds') !== '0' && !globalTimerData.hardReset && !globalTimerData.newTimer) {
             setSeconds(Number(localStorage.getItem('seconds')));
         }
         if (localStorage.getItem('roundsRemaining') !== '-1' && !globalTimerData.hardReset) {
@@ -37,6 +38,8 @@ const XY = ({ work, rounds }: TimerProps) => {
             let interval = null;
             localStorage.setItem('seconds', seconds.toString());
             localStorage.setItem('roundsRemaining', roundsRemaining.toString());
+            globalTimerData.setSeconds(seconds);
+
             if (globalTimerData.isRunning && !globalTimerData.timerComplete) {
                 if (roundsRemaining === rounds) {
                     setRoundsRemaining(roundsRemaining - 1);

@@ -10,9 +10,11 @@ interface Props {
             rest: number;
         },
     ];
+    seconds: number;
+    currentTimerID: number;
 }
 
-const Duration = ({ parsedTimerData }: Props) => {
+const Duration = ({ parsedTimerData, seconds, currentTimerID }: Props) => {
     return (
         <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
             <p
@@ -21,7 +23,7 @@ const Duration = ({ parsedTimerData }: Props) => {
                     userSelect: 'none',
                 }}
             >
-                Time Remaining: {getTimeRemaining(parsedTimerData)}
+                Time Remaining: {getTimeRemaining(parsedTimerData, seconds, currentTimerID)}
             </p>
             <p
                 style={{

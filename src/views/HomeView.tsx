@@ -26,6 +26,7 @@ const TimersView = () => {
     const [searchParams] = useSearchParams();
     const [cacheChecked, setCacheChecked] = useState(false);
     const [workoutHistory, setWorkoutHistory] = useState(['']);
+    const [seconds, setSeconds] = useState(0);
 
     useEffect(() => {
         if (localStorage.getItem('isWorkoutDone') === 'true') {
@@ -67,9 +68,13 @@ const TimersView = () => {
         //if no, add parsedTimerData to workoutHistory
 
         if (workoutHistory === null || workoutHistory[0] === '') {
-            setWorkoutHistory([parsedTimerData]);
+            if (isWorkoutDone) {
+                setWorkoutHistory([parsedTimerData]);
+            }
         } else if (JSON.stringify(workoutHistory[workoutHistory.length - 1]) !== JSON.stringify(parsedTimerData)) {
-            setWorkoutHistory([...workoutHistory, parsedTimerData]);
+            if (isWorkoutDone) {
+                setWorkoutHistory([...workoutHistory, parsedTimerData]);
+            }
         }
     }
 
@@ -113,13 +118,13 @@ const TimersView = () => {
         setNewTimer(true);
     };
     const handleFF = () => {
+        localStorage.setItem('seconds', '-1');
+        localStorage.setItem('roundsRemaining', '-1');
+        localStorage.setItem('isWorking', '-1');
         if (currentTimerID + 1 === parsedTimerData.length && isAtLeastOneTimer) {
             setIsWorkoutDone(true);
             setTimerComplete(false);
             setIsRunning(false);
-            localStorage.setItem('seconds', '-1');
-            localStorage.setItem('roundsRemaining', '-1');
-            localStorage.setItem('isWorking', '-1');
         } else {
             setTimerComplete(false);
             setCurrentTimerID(currentTimerID + 1);
@@ -139,12 +144,12 @@ const TimersView = () => {
     };
 
     return (
-        <TimerContext.Provider value={{ isRunning, timerComplete, setTimerComplete, hardReset, newTimer, setNewTimer }}>
+        <TimerContext.Provider value={{ isRunning, timerComplete, setTimerComplete, hardReset, newTimer, setNewTimer, setSeconds }}>
             <Timers>
                 {isAtLeastOneTimer ? (
                     <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', justifyContent: 'center' }}>
                         <Summary isWorkoutDone={isWorkoutDone} currentTimerID={currentTimerID} isAtLeastOneTimer={isAtLeastOneTimer} parsedTimerData={parsedTimerData} />
-                        <Duration parsedTimerData={parsedTimerData} />
+                        <Duration parsedTimerData={parsedTimerData} seconds={seconds} currentTimerID={currentTimerID} />
                     </div>
                 ) : (
                     ''

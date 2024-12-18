@@ -1,7 +1,8 @@
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import styled from 'styled-components';
+import Summary from '../components/generic/Summary';
 import TextBtn from '../components/generic/TextBtn';
-import TimerSnapshot from '../components/generic/TimerSnapshot';
+import { getTotalTime } from '../utils/helpers';
 
 const Timers = styled.div`
   display: flex;
@@ -24,6 +25,12 @@ const HistoryView = () => {
     const timerData = searchParams.get('timerData');
 
     const handleGoToHistory = () => {
+        localStorage.setItem('currentTimerID', '0');
+        localStorage.setItem('seconds', '-1');
+        localStorage.setItem('roundsRemaining', '-1');
+        localStorage.setItem('isWorking', '-1');
+        localStorage.setItem('isWorkoutDone', 'false');
+        localStorage.setItem('isRunning', 'false');
         const searchParams = new URLSearchParams();
         searchParams.set('timerData', timerData !== null ? timerData : '');
         navigate(`/?${searchParams.toString()}`);
@@ -34,13 +41,36 @@ const HistoryView = () => {
     return (
         <div>
             <Timers>
-                {workoutHistory.map((workout: Array<TimerData>, index1: number) => (
-                    <div key={`workoutSnapshot${index1}`} style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', justifyContent: 'center' }}>
-                        {workout.map((timer: TimerData, index: number) => (
-                            <TimerSnapshot key={`timerSnapshot${index}`} timer={timer} index={index} isWorkoutDone={true} currentTimerID={0} />
-                        ))}
-                    </div>
-                ))}
+                {workoutHistory !== null
+                    ? workoutHistory.map((workout: Array<TimerData>, index1: number) => (
+                          <div
+                              key={`workoutSnapshot${index1}`}
+                              style={{
+                                  display: 'flex',
+                                  gap: '1rem',
+                                  flexWrap: 'wrap',
+                                  justifyContent: 'center',
+                                  alignItems: 'center',
+                                  border: '2px solid black',
+                                  width: '90vw',
+                                  padding: '1rem',
+                                  borderRadius: '8px',
+                              }}
+                          >
+                              <p>Workout #{index1 + 1}</p>
+
+                              <Summary key={`timerSnapshot${index1}`} isWorkoutDone={true} currentTimerID={0} isAtLeastOneTimer={true} parsedTimerData={workout} />
+                              <p
+                                  style={{
+                                      alignSelf: 'center',
+                                      userSelect: 'none',
+                                  }}
+                              >
+                                  Workout Duration: {getTotalTime(workout)}
+                              </p>
+                          </div>
+                      ))
+                    : 'No Workouts Complete Yet'}
 
                 <TextBtn onClick={handleGoToHistory} key={`homeButton`} name={'Return to Workout'} />
             </Timers>

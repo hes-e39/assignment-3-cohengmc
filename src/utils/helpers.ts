@@ -46,6 +46,8 @@ const getTimeRemaining = (
             rest: number;
         },
     ],
+    seconds: number,
+    currentTimerID: number,
 ) => {
     const isAtLeastOneTimer = parsedTimerData[0].type !== '';
 
@@ -53,30 +55,35 @@ const getTimeRemaining = (
         let totalTime = 0;
 
         for (let i = 0; i < parsedTimerData.length; i++) {
-            const timer = parsedTimerData[parsedTimerData.length - 1 - i];
+            const timer = parsedTimerData[i];
 
-            if (parsedTimerData.length - 1 === Number(localStorage.getItem('seconds'))) {
+            if (currentTimerID === i) {
                 if (timer.type === 'Stopwatch') {
-                    totalTime = totalTime + timer.time;
+                    totalTime = totalTime + timer.time - seconds;
                 }
 
                 if (timer.type === 'Countdown') {
-                    totalTime = totalTime + Number(localStorage.getItem('seconds'));
+                    totalTime = totalTime + seconds;
                 }
                 if (timer.type === 'XY') {
-                    totalTime = totalTime + timer.work * timer.rounds;
+                    totalTime = totalTime + timer.work * Number(localStorage.getItem('roundsRemaining')) + seconds;
                 }
 
                 if (timer.type === 'Tabata') {
-                    totalTime = totalTime + (timer.work + timer.rest) * timer.rounds;
+                    if (localStorage.getItem('isWorking') === 'true' || localStorage.getItem('isWorking') === '-1') {
+                        totalTime = totalTime + seconds + (timer.work + timer.rest) * Number(localStorage.getItem('roundsRemaining')) + timer.rest;
+                    } else {
+                        totalTime = totalTime + seconds + (timer.work + timer.rest) * Number(localStorage.getItem('roundsRemaining'));
+                    }
                 }
-            } else {
+            }
+            if (i > currentTimerID) {
                 if (timer.type === 'Stopwatch') {
                     totalTime = totalTime + timer.time;
                 }
 
                 if (timer.type === 'Countdown') {
-                    totalTime = totalTime + Number(localStorage.getItem('seconds'));
+                    totalTime = totalTime + timer.time;
                 }
 
                 if (timer.type === 'XY') {
@@ -88,7 +95,7 @@ const getTimeRemaining = (
                 }
             }
         }
-
+        if (totalTime < 0) totalTime = 0;
         return formatTime(totalTime);
     }
     return formatTime(0);

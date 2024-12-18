@@ -25,6 +25,7 @@ const Stopwatch = ({ time }: TimerProps) => {
         if (cacheChecked) {
             let interval = null;
             localStorage.setItem('seconds', seconds.toString());
+            globalTimerData.setSeconds(seconds);
 
             if (globalTimerData.isRunning && !globalTimerData.timerComplete) {
                 if (seconds === time) {

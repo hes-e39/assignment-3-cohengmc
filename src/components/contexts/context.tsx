@@ -11,6 +11,9 @@ export const TimerContext = createContext({
     setNewTimer: (timerComplete: boolean) => {
         timerComplete;
     },
+    setSeconds: (seconds: number) => {
+        seconds;
+    },
 });
 
 interface TimerData {
