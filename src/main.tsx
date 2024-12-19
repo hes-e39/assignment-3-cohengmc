@@ -1,19 +1,53 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
+import { ErrorBoundary } from 'react-error-boundary';
 import { RouterProvider, createHashRouter } from 'react-router-dom';
 
-import App from './App';
 import './index.css';
+import AddView from './views/AddView';
+import HistoryView from './views/HistoryView';
+import HomeView from './views/HomeView';
+
+interface ErrorFallbackProps {
+    error: Error;
+    resetErrorBoundary: () => void;
+}
+
+const ErrorFallback: React.FC<ErrorFallbackProps> = ({ error, resetErrorBoundary }) => {
+    return (
+        <div role="alert">
+            <p>Something went wrong:</p>
+            <pre>{error.message}</pre>
+            <button onClick={resetErrorBoundary}>Try again</button>
+        </div>
+    );
+};
 
 const router = createHashRouter([
     {
         path: '/',
-        element: <App />,
+        // element: <PageIndex />,
+        children: [
+            {
+                index: true,
+                element: <HomeView />,
+            },
+            {
+                path: '/add',
+                element: <AddView />,
+            },
+            {
+                path: '/history',
+                element: <HistoryView />,
+            },
+        ],
     },
 ]);
 
 createRoot(document.getElementById('root')!).render(
     <StrictMode>
-        <RouterProvider router={router} />
+        <ErrorBoundary FallbackComponent={ErrorFallback}>
+            <RouterProvider router={router} />
+        </ErrorBoundary>
     </StrictMode>,
 );
