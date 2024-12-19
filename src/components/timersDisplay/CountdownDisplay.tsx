@@ -8,7 +8,7 @@ interface TimerProps {
 
 const Countdown = ({ time }: TimerProps) => {
     const globalTimerData = useContext(TimerContext);
-    const [seconds, setSeconds] = useState(time);
+    const [seconds, setSeconds] = useState(-1);
     const [cacheChecked, setCacheChecked] = useState(false);
 
     useEffect(() => {
@@ -22,11 +22,16 @@ const Countdown = ({ time }: TimerProps) => {
             setSeconds(time);
             globalTimerData.setNewTimer(false);
         }
-        if (localStorage.getItem('seconds') !== '-1' && !globalTimerData.hardReset) {
-            setSeconds(Number(localStorage.getItem('seconds')));
+        if (seconds === -1) {
+            const lS = Number(localStorage.getItem('seconds'));
+            if (lS === -1) {
+                setSeconds(time);
+            } else {
+                setSeconds(Number(localStorage.getItem('seconds')));
+            }
         }
         setCacheChecked(true);
-    }, [globalTimerData, time]);
+    }, [globalTimerData, time, seconds]);
 
     useEffect(() => {
         if (cacheChecked) {

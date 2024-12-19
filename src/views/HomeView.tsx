@@ -124,7 +124,6 @@ const TimersView = () => {
         setIsRunning(false);
         setNewTimer(true);
     };
-    console.log('home', seconds);
 
     const handleFF = () => {
         localStorage.setItem('seconds', '-1');

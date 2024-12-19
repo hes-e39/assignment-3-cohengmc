@@ -8,18 +8,30 @@ interface TimerProps {
 
 const Stopwatch = ({ time }: TimerProps) => {
     const globalTimerData = useContext(TimerContext);
-    const [seconds, setSeconds] = useState(0);
+    const [seconds, setSeconds] = useState(-1);
     const [cacheChecked, setCacheChecked] = useState(false);
 
     useEffect(() => {
         if (globalTimerData.hardReset) {
             setSeconds(0);
         }
-        if (localStorage.getItem('seconds') !== '-1' && !globalTimerData.hardReset && Number(localStorage.getItem('seconds')) !== 0) {
-            setSeconds(Number(localStorage.getItem('seconds')));
+        if (globalTimerData.timerComplete) {
+            setSeconds(0);
+        }
+        if (globalTimerData.newTimer) {
+            setSeconds(0);
+            globalTimerData.setNewTimer(false);
+        }
+        if (seconds === -1) {
+            const lS = Number(localStorage.getItem('seconds'));
+            if (lS === -1) {
+                setSeconds(0);
+            } else {
+                setSeconds(Number(localStorage.getItem('seconds')));
+            }
         }
         setCacheChecked(true);
-    }, [globalTimerData]);
+    }, [globalTimerData, seconds]);
 
     useEffect(() => {
         if (cacheChecked) {

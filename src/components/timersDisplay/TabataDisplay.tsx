@@ -10,7 +10,7 @@ interface TimerProps {
 
 const Tabata = ({ work, rest, rounds }: TimerProps) => {
     const globalTimerData = useContext(TimerContext);
-    const [seconds, setSeconds] = useState(work);
+    const [seconds, setSeconds] = useState(-1);
     const [roundsRemaining, setRoundsRemaining] = useState(rounds);
     const [isWorking, setIsWorking] = useState(true);
     const [cacheChecked, setCacheChecked] = useState(false);
@@ -32,15 +32,13 @@ const Tabata = ({ work, rest, rounds }: TimerProps) => {
             setIsWorking(true);
             globalTimerData.setNewTimer(false);
         }
-        if (
-            localStorage.getItem('seconds') !== '-1' &&
-            localStorage.getItem('seconds') !== '0' &&
-            !globalTimerData.hardReset &&
-            !globalTimerData.newTimer &&
-            !globalTimerData.timerComplete &&
-            Number(localStorage.getItem('seconds')) !== work
-        ) {
-            setSeconds(Number(localStorage.getItem('seconds')));
+        if (seconds === -1) {
+            const lS = Number(localStorage.getItem('seconds'));
+            if (lS === -1) {
+                setSeconds(work);
+            } else {
+                setSeconds(Number(localStorage.getItem('seconds')));
+            }
         }
         if (localStorage.getItem('roundsRemaining') !== '-1' && !globalTimerData.hardReset) {
             setRoundsRemaining(Number(localStorage.getItem('roundsRemaining')));
@@ -50,7 +48,7 @@ const Tabata = ({ work, rest, rounds }: TimerProps) => {
             else setIsWorking(true);
         }
         setCacheChecked(true);
-    }, [globalTimerData, work, rounds]);
+    }, [globalTimerData, seconds, work, rounds]);
 
     useEffect(() => {
         if (cacheChecked) {

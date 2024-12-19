@@ -28,20 +28,19 @@ const XY = ({ work, rounds }: TimerProps) => {
             setRoundsRemaining(rounds - 1);
             globalTimerData.setNewTimer(false);
         }
-        if (
-            localStorage.getItem('seconds') !== '-1' &&
-            localStorage.getItem('seconds') !== '0' &&
-            !globalTimerData.hardReset &&
-            !globalTimerData.newTimer &&
-            Number(localStorage.getItem('seconds')) !== work
-        ) {
-            setSeconds(Number(localStorage.getItem('seconds')));
+        if (seconds === -1) {
+            const lS = Number(localStorage.getItem('seconds'));
+            if (lS === -1) {
+                setSeconds(work);
+            } else {
+                setSeconds(Number(localStorage.getItem('seconds')));
+            }
         }
         if (localStorage.getItem('roundsRemaining') !== '-1' && !globalTimerData.hardReset) {
             setRoundsRemaining(Number(localStorage.getItem('roundsRemaining')));
         }
         setCacheChecked(true);
-    }, [globalTimerData, work, rounds]);
+    }, [globalTimerData, seconds, work, rounds]);
 
     useEffect(() => {
         if (cacheChecked) {
