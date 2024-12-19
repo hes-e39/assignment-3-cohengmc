@@ -15,6 +15,8 @@ const Timers = styled.div`
   gap: 1em
 `;
 
+const blankHistory = [[{ type: '', time: 0, rounds: 0, work: 0, rest: 0, description: '' }]];
+
 const TimersView = () => {
     const navigate = useNavigate();
     const [isRunning, setIsRunning] = useState(false);
@@ -25,7 +27,7 @@ const TimersView = () => {
     const [hardReset, setHardReset] = useState(false);
     const [searchParams] = useSearchParams();
     const [cacheChecked, setCacheChecked] = useState(false);
-    const [workoutHistory, setWorkoutHistory] = useState(['']);
+    const [workoutHistory, setWorkoutHistory] = useState(blankHistory);
     const [seconds, setSeconds] = useState(0);
 
     useEffect(() => {
@@ -37,6 +39,9 @@ const TimersView = () => {
         }
         const wH = localStorage.getItem('workoutHistory');
         setWorkoutHistory(wH !== null && JSON.parse(wH));
+        if (wH === 'false') {
+            setWorkoutHistory(blankHistory);
+        }
         setCurrentTimerID(Number(localStorage.getItem('currentTimerID')));
         setCacheChecked(true);
     }, []);
@@ -68,7 +73,7 @@ const TimersView = () => {
         //Check if last item in workout history is parsedTimerdata
         //if no, add parsedTimerData to workoutHistory
 
-        if (workoutHistory === null || workoutHistory[0] === '') {
+        if (workoutHistory === null || workoutHistory[0][0].type === '') {
             if (isWorkoutDone) {
                 setWorkoutHistory([parsedTimerData]);
             }
@@ -109,6 +114,7 @@ const TimersView = () => {
         localStorage.setItem('seconds', '-1');
         localStorage.setItem('roundsRemaining', '-1');
         localStorage.setItem('isWorking', '-1');
+        setSeconds(-1);
         if (currentTimerID === 0) {
             setHardReset(true);
         }
@@ -118,10 +124,13 @@ const TimersView = () => {
         setIsRunning(false);
         setNewTimer(true);
     };
+    console.log('home', seconds);
+
     const handleFF = () => {
         localStorage.setItem('seconds', '-1');
         localStorage.setItem('roundsRemaining', '-1');
         localStorage.setItem('isWorking', '-1');
+        setSeconds(-1);
         if (currentTimerID + 1 === parsedTimerData.length && isAtLeastOneTimer) {
             setIsWorkoutDone(true);
             setTimerComplete(false);

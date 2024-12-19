@@ -32,7 +32,14 @@ const Tabata = ({ work, rest, rounds }: TimerProps) => {
             setIsWorking(true);
             globalTimerData.setNewTimer(false);
         }
-        if (localStorage.getItem('seconds') !== '-1' && localStorage.getItem('seconds') !== '0' && !globalTimerData.hardReset && !globalTimerData.newTimer) {
+        if (
+            localStorage.getItem('seconds') !== '-1' &&
+            localStorage.getItem('seconds') !== '0' &&
+            !globalTimerData.hardReset &&
+            !globalTimerData.newTimer &&
+            !globalTimerData.timerComplete &&
+            Number(localStorage.getItem('seconds')) !== work
+        ) {
             setSeconds(Number(localStorage.getItem('seconds')));
         }
         if (localStorage.getItem('roundsRemaining') !== '-1' && !globalTimerData.hardReset) {

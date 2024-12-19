@@ -15,7 +15,7 @@ const Stopwatch = ({ time }: TimerProps) => {
         if (globalTimerData.hardReset) {
             setSeconds(0);
         }
-        if (localStorage.getItem('seconds') !== '-1' && !globalTimerData.hardReset) {
+        if (localStorage.getItem('seconds') !== '-1' && !globalTimerData.hardReset && Number(localStorage.getItem('seconds')) !== 0) {
             setSeconds(Number(localStorage.getItem('seconds')));
         }
         setCacheChecked(true);

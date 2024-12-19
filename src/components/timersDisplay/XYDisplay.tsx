@@ -28,7 +28,13 @@ const XY = ({ work, rounds }: TimerProps) => {
             setRoundsRemaining(rounds - 1);
             globalTimerData.setNewTimer(false);
         }
-        if (localStorage.getItem('seconds') !== '-1' && localStorage.getItem('seconds') !== '0' && !globalTimerData.hardReset && !globalTimerData.newTimer) {
+        if (
+            localStorage.getItem('seconds') !== '-1' &&
+            localStorage.getItem('seconds') !== '0' &&
+            !globalTimerData.hardReset &&
+            !globalTimerData.newTimer &&
+            Number(localStorage.getItem('seconds')) !== work
+        ) {
             setSeconds(Number(localStorage.getItem('seconds')));
         }
         if (localStorage.getItem('roundsRemaining') !== '-1' && !globalTimerData.hardReset) {

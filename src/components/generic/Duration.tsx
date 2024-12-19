@@ -8,6 +8,7 @@ interface Props {
             rounds: number;
             work: number;
             rest: number;
+            description: 'string';
         },
     ];
     seconds: number;

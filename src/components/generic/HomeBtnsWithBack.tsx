@@ -14,7 +14,7 @@ const HomeBtnsWithBack = ({ timeChange, handleReset, handleBackBtn, handleFF, is
         <div>
             <div className="btnContainer">
                 <LogoBtn onClick={handleBackBtn} name="back" />
-                <HomeBtns timeChange={timeChange} handleReset={handleReset} isRunning={isRunning} handleFF={handleFF} />
+                <HomeBtns timeChange={timeChange} handleReset={handleReset} isRunning={isRunning} handleFF={handleFF} isWorkoutDone={false} />
             </div>
         </div>
     );
