@@ -9,7 +9,7 @@ interface TimerProps {
 
 const XY = ({ work, rounds }: TimerProps) => {
     const globalTimerData = useContext(TimerContext);
-    const [seconds, setSeconds] = useState(work);
+    const [seconds, setSeconds] = useState(-1);
     const [roundsRemaining, setRoundsRemaining] = useState(rounds);
     const [cacheChecked, setCacheChecked] = useState(false);
 
